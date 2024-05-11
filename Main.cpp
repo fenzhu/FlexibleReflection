@@ -19,6 +19,21 @@ struct Node
     REFLECT() // Enable reflection for this type
 };
 
+struct test
+{
+    enum
+    {
+        a = 1,
+        b = 3,
+    };
+
+    enum
+    {
+        c = 4,
+        d = 2,
+    };
+};
+
 int main()
 {
     // Create an object of type Node
@@ -31,6 +46,9 @@ int main()
     typeDesc->dump(&node);
     std::cout << std::endl
               << Node::a.k << std::endl;
+
+    std::cout << test::a << std::endl;
+    std::cout << test::d << std::endl;
     return 0;
 }
 
