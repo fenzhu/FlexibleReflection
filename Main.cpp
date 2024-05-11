@@ -1,25 +1,43 @@
 #include <vector>
 #include "Reflect.h"
 
-struct Node {
+struct Self
+{
+    Self(void (*init)(Self *)) { init(this); }
+    int k;
+};
+
+struct Node
+{
     std::string key;
     int value;
     std::vector<Node> children;
 
-    REFLECT()       // Enable reflection for this type
+    static Self a;
+    static void inita(Self *a);
+
+    REFLECT() // Enable reflection for this type
 };
 
-int main() {
+int main()
+{
     // Create an object of type Node
     Node node = {"apple", 3, {{"banana", 7, {}}, {"cherry", 11, {}}}};
 
     // Find Node's type descriptor
-    reflect::TypeDescriptor* typeDesc = reflect::TypeResolver<Node>::get();
+    reflect::TypeDescriptor *typeDesc = reflect::TypeResolver<Node>::get();
 
     // Dump a description of the Node object to the console
     typeDesc->dump(&node);
-
+    std::cout << std::endl
+              << Node::a.k << std::endl;
     return 0;
+}
+
+Self Node::a{Node::inita};
+void Node::inita(Self *a)
+{
+    a->k = 20;
 }
 
 // Define Node's type descriptor

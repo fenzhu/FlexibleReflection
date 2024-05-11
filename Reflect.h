@@ -91,6 +91,8 @@ struct TypeDescriptor_Struct : TypeDescriptor {
     static reflect::TypeDescriptor_Struct Reflection; \
     static void initReflection(reflect::TypeDescriptor_Struct*);
 
+
+//use type::initReflection as type::Reflection's initialize parameter
 #define REFLECT_STRUCT_BEGIN(type) \
     reflect::TypeDescriptor_Struct type::Reflection{type::initReflection}; \
     void type::initReflection(reflect::TypeDescriptor_Struct* typeDesc) { \
