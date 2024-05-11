@@ -32,6 +32,7 @@ namespace reflect
     // A helper class to find TypeDescriptors in different ways:
     struct DefaultResolver
     {
+        // prefer 'char' version of 'func' if T has a static member called Reflection
         template <typename T>
         static char func(decltype(&T::Reflection));
         template <typename T>
