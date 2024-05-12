@@ -1,4 +1,6 @@
 #include <vector>
+#include <memory>
+
 #include "Reflect.h"
 
 struct Self
@@ -15,6 +17,15 @@ struct Node
 
     static Self a;
     static void inita(Self *a);
+
+    REFLECT() // Enable reflection for this type
+};
+
+struct NodeUniquePtr
+{
+    std::string key;
+    double value;
+    std::unique_ptr<NodeUniquePtr> next;
 
     REFLECT() // Enable reflection for this type
 };
@@ -71,12 +82,17 @@ main()
 {
     // Create an object of type Node
     Node node = {"apple", 3, {{"banana", 7, {}}, {"cherry", 11, {}}}};
-
     // Find Node's type descriptor
     reflect::TypeDescriptor *typeDesc = reflect::TypeResolver<Node>::get();
-
     // Dump a description of the Node object to the console
     typeDesc->dump(&node);
+
+    // support for std::unique_ptr
+    NodeUniquePtr nodePtr = {"apple", 3,
+                             std::unique_ptr<NodeUniquePtr>{new NodeUniquePtr{"banana", 7,
+                                                                              std::unique_ptr<NodeUniquePtr>{new NodeUniquePtr{"cherry", 11, nullptr}}}}};
+    reflect::TypeDescriptor *ptrDesc = reflect::TypeResolver<NodeUniquePtr>::get();
+    ptrDesc->dump(&nodePtr);
 
     test t = {"str1"};
     reflect::TypeDescriptor *testDesc = reflect::TypeResolver<test>::get();
@@ -108,4 +124,10 @@ REFLECT_STRUCT_END()
 
 REFLECT_STRUCT_BEGIN(ClassText)
 REFLECT_STRUCT_MEMBER(classInt)
+REFLECT_STRUCT_END()
+
+REFLECT_STRUCT_BEGIN(NodeUniquePtr)
+REFLECT_STRUCT_MEMBER(key)
+REFLECT_STRUCT_MEMBER(value)
+REFLECT_STRUCT_MEMBER(next)
 REFLECT_STRUCT_END()

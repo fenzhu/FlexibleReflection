@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <cstddef>
+#include <memory>
 
 namespace reflect
 {
@@ -186,12 +187,66 @@ namespace reflect
 
     // Partially specialize TypeResolver<> for std::vectors:
     template <typename T>
-    class TypeResolver<std::vector<T>>
+    struct TypeResolver<std::vector<T>>
     {
-    public:
         static TypeDescriptor *get()
         {
             static TypeDescriptor_StdVector typeDesc{(T *)nullptr};
+            return &typeDesc;
+        }
+    };
+
+    //--------------------------------------------------------
+    // Type descriptors for std::unique_ptr
+    //--------------------------------------------------------
+    struct TypeDescriptor_StdUniquePtr : TypeDescriptor
+    {
+        TypeDescriptor *itemDescriptor;
+
+        const void *(*getItem)(const void *);
+
+        template <typename ItemType>
+        TypeDescriptor_StdUniquePtr(ItemType *)
+            : TypeDescriptor{"std::unique_ptr<>", sizeof(std::unique_ptr<ItemType>)},
+              itemDescriptor{TypeResolver<ItemType>::get()}
+        {
+            getItem = [](const void *ptr) -> const void *
+            {
+                const auto &p = *(const std::unique_ptr<ItemType> *)ptr;
+                return p.get();
+            };
+        }
+
+        virtual std::string getFullName() const override
+        {
+            return std::string("std::unique_ptr<") + itemDescriptor->getFullName() + ">";
+        }
+
+        virtual void dump(const void *obj, int indentLevel) const override
+        {
+            std::cout << getFullName() << " {";
+
+            auto item = getItem(obj);
+            if (item)
+            {
+                std::cout << std::endl;
+                std::cout << std::string(4 * (indentLevel + 1), ' ');
+                itemDescriptor->dump(getItem(obj), indentLevel + 1);
+                std::cout << std::string(4 * indentLevel, ' ') << "}";
+            }
+            else
+            {
+                std::cout << "}";
+            }
+        }
+    };
+
+    template <typename T>
+    struct TypeResolver<std::unique_ptr<T>>
+    {
+        static TypeDescriptor *get()
+        {
+            static TypeDescriptor_StdUniquePtr typeDesc{(T *)nullptr};
             return &typeDesc;
         }
     };
