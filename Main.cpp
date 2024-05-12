@@ -21,6 +21,7 @@ struct Node
 
 struct test
 {
+    std::string str;
     enum
     {
         a = 1,
@@ -32,9 +33,41 @@ struct test
         c = 4,
         d = 2,
     };
+
+    REFLECT()
 };
 
-int main()
+class ClassText
+{
+private:
+    int classInt;
+
+public:
+    ClassText(int a) : classInt(a)
+    {
+    }
+
+    REFLECT();
+};
+
+// sizeof(Empty) == 1
+class Empty
+{
+};
+
+void Run()
+{
+    // static member a of type Self in struct Node
+    std::cout << std::endl
+              << Node::a.k << std::endl;
+
+    std::cout << test::a << std::endl;
+    std::cout << test::d << std::endl;
+
+    std::cout << sizeof(Empty) << std::endl;
+}
+
+main()
 {
     // Create an object of type Node
     Node node = {"apple", 3, {{"banana", 7, {}}, {"cherry", 11, {}}}};
@@ -44,11 +77,15 @@ int main()
 
     // Dump a description of the Node object to the console
     typeDesc->dump(&node);
-    std::cout << std::endl
-              << Node::a.k << std::endl;
 
-    std::cout << test::a << std::endl;
-    std::cout << test::d << std::endl;
+    test t = {"str1"};
+    reflect::TypeDescriptor *testDesc = reflect::TypeResolver<test>::get();
+    testDesc->dump(&t);
+
+    ClassText c(999);
+    reflect::TypeDescriptor *classDesc = reflect::TypeResolver<ClassText>::get();
+    classDesc->dump(&c);
+
     return 0;
 }
 
@@ -63,4 +100,12 @@ REFLECT_STRUCT_BEGIN(Node)
 REFLECT_STRUCT_MEMBER(key)
 REFLECT_STRUCT_MEMBER(value)
 REFLECT_STRUCT_MEMBER(children)
+REFLECT_STRUCT_END()
+
+REFLECT_STRUCT_BEGIN(test)
+REFLECT_STRUCT_MEMBER(str)
+REFLECT_STRUCT_END()
+
+REFLECT_STRUCT_BEGIN(ClassText)
+REFLECT_STRUCT_MEMBER(classInt)
 REFLECT_STRUCT_END()

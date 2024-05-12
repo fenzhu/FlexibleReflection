@@ -99,19 +99,18 @@ namespace reflect
         }
         virtual void dump(const void *obj, int indentLevel) const override
         {
-            std::cout << name << " {" << std::endl;
+            std::cout << name << " " << size << " {" << std::endl;
             for (const Member &member : members)
             {
                 std::cout << std::string(4 * (indentLevel + 1), ' ') << member.name << " = ";
                 member.type->dump((char *)obj + member.offset, indentLevel + 1);
                 std::cout << std::endl;
             }
-            std::cout << std::string(4 * indentLevel, ' ') << "}";
+            std::cout << std::string(4 * indentLevel, ' ') << "}" << std::endl;
         }
     };
 
 #define REFLECT()                                     \
-    friend struct reflect::DefaultResolver;           \
     static reflect::TypeDescriptor_Struct Reflection; \
     static void initReflection(reflect::TypeDescriptor_Struct *);
 
