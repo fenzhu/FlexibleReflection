@@ -10,7 +10,7 @@ struct Self
 struct Node
 {
     std::string key;
-    int value;
+    double value;
     std::vector<Node> children;
 
     static Self a;
