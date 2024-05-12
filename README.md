@@ -20,8 +20,8 @@ For detailed build instructions, see ["How to Build a CMake-Based Project"](http
 - typeDescriptor，作为实际保存反射相关信息的对象。
 - typeDescriptor的初始化函数。
 2. 初始化类中反射相关的数据
-- 声明typeDescriptor，调用初始化函数
-- 初始化内容包括：名称、大小、成员名称、成员offset（运行时获取成员对象的指针）、成员的typeDescriptor（递归dump反射信息）
+- 声明typeDescriptor，调用初始化函数。
+- 初始化内容包括：名称、大小、成员名称、成员offset（运行时获取成员对象的指针）、成员的typeDescriptor（递归dump反射信息）。
 3. 提供查询反射数据的接口
 - 通过helper对象获取类型T的typeDescriptor，获取方式为模板SFINAE，判断类型T是否存在反射注入。
 - 拥有反射注入的类，返回typeDescriptor对象。
